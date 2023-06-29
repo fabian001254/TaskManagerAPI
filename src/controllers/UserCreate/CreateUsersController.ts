@@ -1,6 +1,9 @@
-import Controller from "./controller";
+import Controller from "../controller";
 import { Response, Request} from "express";
-import bcrypt from "bcrypt"
+import argon2 from "argon2";
+import { emailVerificator } from "./validatorUserController";
+import {validationResult} from "express-validator"
+import jwt from "jsonwebtoken";
 
 interface UserO {
   username: string;
@@ -17,6 +20,21 @@ interface UserN {
   email: string;
   password: string;
 }
+
+interface TokenPayload {
+  id: {
+    id_user: number;
+    username: string;
+    rol: string;
+    email: string;
+    password: string;
+    name: string;
+    lastname: string;
+  };
+  iat: number;
+  exp: number;
+}
+
 
 
 
@@ -84,11 +102,12 @@ class CreateUsersController extends Controller {
       if (this.validateUser(User) || this.validateUserO(User)) {
         const validatedData = req.body;
         
-        if(!this.validateEmail(validatedData.email)) {
-          return res.status(400).json({
-            message: 'Invalid email format',
-          });
-        }   
+        await Promise.all(emailVerificator.map(validation => validation.run(req)));
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(400).json(errors);
+            return
+        }  
         
         if (await this.userValidate(validatedData)) {
           return res.status(400).json({
@@ -117,12 +136,26 @@ class CreateUsersController extends Controller {
               message: 'Invalid Rol'
             });
           }  
-          
+
+        if(validatedData.rol.toUpperCase() == "ADMIN"){
+          const token = req.headers.authorization?.split(" ")[1]; // Obtiene el token bearer del encabezado
+
+          if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+          }
+
+          const decodedToken = jwt.verify(token, process.env.SECRET_KEY!) as TokenPayload; // Verifica el token y obtén los datos decodificados
+
+          // Verifica si el usuario tiene el rol de administrador
+          if (decodedToken.id.rol !== "ADMIN") {
+            console.log(decodedToken);
+            return res.status(403).json({ message: "Only admins can create admin users" });
+          }
+        }
         const password = validatedData.password;
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await argon2.hash(password);
         validatedData.password = hashedPassword;
         try{
-          //Antes de crear validar si es un usuario admin el que va a crear un admin :D
           const user = await this.prismaClient.user.create({data: validatedData})
           user.password = "Hidden for security"
           return res.status(201).json({ message: "Created successfully", user});

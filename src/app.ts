@@ -3,8 +3,10 @@ import express,{ Application, NextFunction, Request, Response } from "express"
 import {Prisma, PrismaClient} from "@prisma/client"
 import dotenv from "dotenv"
 import cors from "cors"
-import CreateUsersRouter from "./routes/CreateUsersRouter"
+import CreateUsersRouter from "./routes/UserCreate/CreateUsersRouter"
 import DatabaseStatusController from "./controllers/databaseStatus"
+import jwt from "jsonwebtoken";
+import authRouter from "./routes/Auth/authRouter"
 dotenv.config()
 /**
  * Clase principal de la api
@@ -33,6 +35,7 @@ dotenv.config()
 	*/
 	private routes():void{
 		this.app.use("/",CreateUsersRouter);
+		this.app.use("/",authRouter)
 		this.app.use(
 			(req:Request,res:Response,next:NextFunction)=>{
 				res.status(404).json({message: "Recurso no encontrado"})

@@ -1,5 +1,5 @@
-import CreateUsersController from "../controllers/CreateUsersController";
-import routerClass from "./router";
+import CreateUsersController from "../../controllers/UserCreate/CreateUsersController";
+import routerClass from "../router";
 import {Request,Response } from "express"
 
 class CreateUsersRouter extends routerClass {
@@ -11,7 +11,7 @@ class CreateUsersRouter extends routerClass {
     }
 
     private routes():void{
-        this.router.post("/users",
+        this.router.post("/users/register",
             (req:Request, res:Response)=>{
                 this.createUsersController.createUser(req, res)
             }
