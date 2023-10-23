@@ -117,19 +117,18 @@ class CreateUsersController extends Controller {
         
         if (!this.validateName(validatedData.name)) {
           return res.status(400).json({
-            message: 'Invalid name format',
+            message: 'The name must only have letters',
           });
         }
         
         if (!this.validateLastName(validatedData.lastname)) {
           return res.status(400).json({
-            message: 'Invalid last name format',
+            message: 'The last name must only have letters',
           });
         }
         
         
         validatedData.rol = validatedData.rol.toUpperCase()
-        
         const rol = this.validateRol(validatedData.rol);
         if (!rol) {
             return res.status(400).json({
@@ -148,7 +147,6 @@ class CreateUsersController extends Controller {
 
           // Verifica si el usuario tiene el rol de administrador
           if (decodedToken.id.rol !== "ADMIN") {
-            console.log(decodedToken);
             return res.status(403).json({ message: "Only admins can create admin users" });
           }
         }
@@ -160,7 +158,7 @@ class CreateUsersController extends Controller {
           user.password = "Hidden for security"
           return res.status(201).json({ message: "Created successfully", user});
         }catch(err){
-          res.status(500).json({ message: "Internal Error"});
+          res.status(500).json({ message: "Internal Error",err});
         }
         
       }

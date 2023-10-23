@@ -51,7 +51,7 @@ class authController extends Controller{
             }
 
         } catch (error) {
-            // Si ocurre un error durante la autenticación, devuelve un error 400
+            // Si ocurre un error durante la autenticación, devuelve un error 500
             res.status(500).json({ message: "Internal error" })
             console.log(error)
             console.log(error)

@@ -38,7 +38,7 @@ dotenv.config()
 		this.app.use("/",authRouter)
 		this.app.use(
 			(req:Request,res:Response,next:NextFunction)=>{
-				res.status(404).json({message: "Recurso no encontrado"})
+				res.status(404).json({message: "Resourse not found"})
 				next()
 			})
 		
