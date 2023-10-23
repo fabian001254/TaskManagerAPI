@@ -1,7 +1,6 @@
 import {Response,Request} from "express"
 import jwt from "jsonwebtoken"
 import argon2 from "argon2";
-
 import Controller from "../controller"
 
 class authController extends Controller{
@@ -46,7 +45,7 @@ class authController extends Controller{
                 if(typeof secretKey == "string"){
                     // Si la clave secreta es una cadena, genera un token JWT y lo devuelve
                     const token =jwt.sign(payload,secretKey,options)
-                    return res.status(201).json({ message: "Created successfull", token})   
+                    return res.status(201).json({ message: 'Created successfull', token})   
                 }   
             }
 
