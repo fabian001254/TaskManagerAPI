@@ -96,6 +96,9 @@ class CreateUsersController extends Controller {
   
 
   async createUser(req: Request, res: Response) {
+    if(req.body === undefined || req.body === null || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: "The request body is empty" })
+    }
     try {
       const User = req.body;
 
@@ -161,6 +164,8 @@ class CreateUsersController extends Controller {
           res.status(500).json({ message: "Internal Error",err});
         }
         
+      }else{
+          res.status(400).json({ message: "The data is not complete."});
       }
 
       }catch (e){

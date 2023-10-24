@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 import cors from "cors"
 import CreateUsersRouter from "./routes/UserCreate/CreateUsersRouter"
 import DatabaseStatusController from "./controllers/databaseStatus"
+import CreateTaskRouter from "./routes/Task/CreateTaskRouter"
 import jwt from "jsonwebtoken";
 import authRouter from "./routes/Auth/authRouter"
 dotenv.config()
@@ -36,6 +37,7 @@ dotenv.config()
 	private routes():void{
 		this.app.use("/",CreateUsersRouter);
 		this.app.use("/",authRouter)
+		this.app.use("/",CreateTaskRouter);
 		this.app.use(
 			(req:Request,res:Response,next:NextFunction)=>{
 				res.status(404).json({message: "Resourse not found"})
